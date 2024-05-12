@@ -5,8 +5,8 @@
 _start:
     
 	li a0, 1
-	la a1, hello
-	li a2, 13
+	la a1, palavra
+	li a2, 4
 	li a7, 64
 	ecall 
 
@@ -15,5 +15,6 @@ _start:
 	ecall 
 
 .data
-hello: .ascii "Hello world!\n"
+palavra: .ascii "ola\n"
+palavra_ao_contrario: .ascii "alo\n"
  
