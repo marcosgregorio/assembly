@@ -40,6 +40,7 @@ insert_element_into_list:
 	# copiando o valor do inserido no input
 	mv t2, a0
 
+
   	# pegando o head e armazendo em a3
 	add a3, sp, zero
 	add t1, a4, zero
@@ -58,6 +59,10 @@ insere_inteiro:
 
 	# beq t1, zero, insert_into_end_of_list
 	beq t1, zero, insert_first_element
+
+	# perguntar para o caimi o pq fazer isso
+	# addi sp, sp, -8
+
 	j insert_after
 	# carrega o proximo endereco
 	#addi a3,a3, 4
@@ -68,8 +73,8 @@ insere_inteiro:
 
 insert_first_element:
 	add a3, sp, zero
+	
 	li a7, 9
-
 	li a0, 8
 	ecall
 	
@@ -86,6 +91,11 @@ insert_first_element:
 	la a0, valorInserido
 	li a7, 4
 	ecall
+
+	#lw a0, 0(sp)
+	#li a7, 1
+	#ecall
+
 	add a0, a4, zero
 	li a7, 1	
 	ecall
@@ -99,12 +109,23 @@ insert_last:
 	addi t5, sp, 4
 
 	li a0, 8
+	li a7, 9
 	ecall
+	
 
 	sw t2, 0(a0)
 	sw zero, 4(a0)
-	# armazena endereco do prox
-	sw a0, 0(t5)	
+	
+	# armazendo o endereco de a0 em sp + 4
+	sw a0, 0(t5)
+	
+	# print para ver se o valor esta la correto
+	lw t1, 4(sp)
+    	lw a0, 4(t1)   
+	li a7, 1
+	ecall
+	j main
+
 	
 # printa que o valor que foi inserido e o tamanho da lista
 
@@ -123,6 +144,7 @@ show_statistics:
 
 end_program:
 	la a0, mensagemFim
+	
 	li a7, 4
 	ecall
 	
