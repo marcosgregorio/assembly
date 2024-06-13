@@ -60,9 +60,6 @@ insere_inteiro:
 	# beq t1, zero, insert_into_end_of_list
 	beq t1, zero, insert_first_element
 
-	# perguntar para o caimi o pq fazer isso
-	# addi sp, sp, -8
-
 	j insert_after
 	# carrega o proximo endereco
 	#addi a3,a3, 4
@@ -83,7 +80,7 @@ insert_first_element:
 	sw zero, 4(a0)
 	
 	# sp está apontando para o primeiro endereço
-	mv sp, a0
+	sw a0, 0(sp)
 	
 	addi a4, a4, 1
 	
@@ -103,11 +100,20 @@ insert_first_element:
 	j main
 insert_after:
 	lw t3, (sp)
-	lh t4, 4(sp)
+	lw t4, 4(sp)
+	lw t3, 0(t3)
+	# imprime o valor atual
+	#mv a0, t3
+	#li a7, 1
+	#ecall
+	
 	beqz t4, insert_last
+	# valor atual e menor que o valor do input?
+	ble t3, a0, go_to_next_value
+	
 insert_last:
 	addi t5, sp, 4
-
+	
 	li a0, 8
 	li a7, 9
 	ecall
@@ -120,13 +126,18 @@ insert_last:
 	sw a0, 0(t5)
 	
 	# print para ver se o valor esta la correto
-	lw t1, 4(sp)
-    	lw a0, 4(t1)   
-	li a7, 1
-	ecall
+	#lw t1, 4(sp)
+    	#lw a0, 4(t1)
+	#li a7, 1
+	#ecall
 	j main
 
-	
+go_to_next_value:
+	lw t3, 0(t4)
+	lw t4, 4(t4)
+	mv a0, t3
+	li a7, 1
+	ecall
 # printa que o valor que foi inserido e o tamanho da lista
 
 #insert_into_end_of_list:
