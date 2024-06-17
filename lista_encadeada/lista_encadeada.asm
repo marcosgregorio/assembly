@@ -1,9 +1,11 @@
 .data
 	mensagemMenu: .string "\n1) Insere um elemento na lista \n2) Remover elemento da lista por indice \n3) Remover elemento da lista por valor \n4) Mostrar todos os elementos da lista \n5) Mostrar estatisticas \n6) Sair do programa\n"
+	mensagemSelecioneOpcao: .string "\n Selecione uma opcao valida!\n"
 	mensagemInserirElemento: .string "\nPor favor, insira um numero na lista: \n"
 	mensagemFim: .string "\nFim do programa\n"
 	mensagem: .string "\n retornado da funcao"
 	valorInserido: .string "\n Valor inserido com sucesso! Tamanho: "
+	printAqui: .string "\n ##### AQUI #####"
 .text
 # a4 tam do minha lista
 # sp seria meu head
@@ -28,6 +30,13 @@ main:
 	beq a0, t4, print_list
 	beq a0, t5, show_statistics
 	beq a0, t6, end_program
+
+selecione_opcao_valida:
+	la a0, mensagemSelecioneOpcao
+	li a7, 4
+	ecall
+	j main
+	
 
 insert_element_into_list:
 	la a0, mensagemInserirElemento
@@ -60,6 +69,9 @@ insere_inteiro:
 	# beq t1, zero, insert_into_end_of_list
 	beq t1, zero, insert_first_element
 
+	
+	mv t5, sp 
+	
 	j insert_after
 	# carrega o proximo endereco
 	#addi a3,a3, 4
@@ -99,20 +111,29 @@ insert_first_element:
 	# corrigir esse retorno
 	j main
 insert_after:
-	lw t3, (sp)
-	lw t4, 4(sp)
-	lw t3, 0(t3)
 	# imprime o valor atual
-	#mv a0, t3
-	#li a7, 1
-	#ecall
+	lw t3, 0(t5)
+	lw t4, 4(t5)
+	lw t3, (t3)
 	
+loop_insercao:
 	beqz t4, insert_last
+	
 	# valor atual e menor que o valor do input?
 	ble t3, a0, go_to_next_value
 	
+	la a0, printAqui
+	li a7, 4
+	ecall
+	
+	mv t3, a0
+	li a7, 1
+	ecall
+	
+	j main
+	
 insert_last:
-	addi t5, sp, 4
+	addi a6, t5, 4
 	
 	li a0, 8
 	li a7, 9
@@ -123,21 +144,21 @@ insert_last:
 	sw zero, 4(a0)
 	
 	# armazendo o endereco de a0 em sp + 4
-	sw a0, 0(t5)
+	sw a0, (a6)
 	
 	# print para ver se o valor esta la correto
 	#lw t1, 4(sp)
-    	#lw a0, 4(t1)
+    	#mv a0, t1
 	#li a7, 1
 	#ecall
 	j main
 
 go_to_next_value:
-	lw t3, 0(t4)
-	lw t4, 4(t4)
-	mv a0, t3
-	li a7, 1
-	ecall
+	# fazer a copia de t4 para t5
+	mv t5, t4
+	lw t3, 0(t5)
+	lw t4, 4(t5)
+	j loop_insercao
 # printa que o valor que foi inserido e o tamanho da lista
 
 #insert_into_end_of_list:
