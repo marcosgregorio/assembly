@@ -126,14 +126,14 @@ loop_insercao:
 	li a7, 4
 	ecall
 	
-	mv t3, a0
+	add a0, t3, zero
 	li a7, 1
 	ecall
 	
 	j main
 	
 insert_last:
-	addi a6, t5, 4
+	#addi a6, t5, 4
 	
 	li a0, 8
 	li a7, 9
@@ -144,7 +144,7 @@ insert_last:
 	sw zero, 4(a0)
 	
 	# armazendo o endereco de a0 em sp + 4
-	sw a0, (a6)
+	sw a0, 4(t5)
 	
 	# print para ver se o valor esta la correto
 	#lw t1, 4(sp)
