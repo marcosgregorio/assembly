@@ -117,12 +117,16 @@ insert_after:
 	lw t3, (t3)
 	
 loop_insercao:
-	beqz t4, insert_last
 	
-	# valor atual e menor que o valor do input?
+	# valor atual e menor que o valor do input
 	ble t3, a0, go_to_next_value
 	
-	#bge t3, a0, 
+	# beqz t4, insert_last
+		
+	# valor atual e maior que o valor do input
+	bge t3, a0, insert_greater
+	
+	beqz t4, insert_last
 	
 	add a0, t3, zero
 	li a7, 1
@@ -150,18 +154,35 @@ insert_last:
 	j main
 
 go_to_next_value:
-	# fazer a copia de t4 para t5
 	mv t5, t4
 	lw t3, 0(t5)
 	lw t4, 4(t5)
+	
 	j loop_insercao
-# printa que o valor que foi inserido e o tamanho da lista
+	
+insert_greater:
+	beq t5, sp, insert_into_first_place
 
-#insert_into_end_of_list:
-#	sw a1, 0(a3)
-#	sw zero, 4(a3)
-  	#addi a4, a4, 1
-
+insert_into_middle:
+	li a0, 8
+	li a7, 9
+	ecall
+	
+	sw t2, 0(a0)
+	#sw next, 4(a0)
+	
+insert_into_first_place:
+	li a0, 8
+	li a7, 9
+	ecall
+	
+	sw t2, 0(a0)
+	sw sp, 4(a0)
+	
+	mv sp, a0
+	
+	j main
+	
 remove_element_by_index:
 
 remove_element_by_value:
