@@ -6,6 +6,7 @@
 	mensagem: .string "\n retornado da funcao"
 	valorInserido: .string "\n Valor inserido com sucesso! Tamanho: "
 	printAqui: .string "\n ##### AQUI #####"
+	espaco: .string " "
 .text
 # a4 tam do minha lista
 # sp seria meu head
@@ -30,7 +31,45 @@ main:
 	beq a0, t4, print_list
 	beq a0, t5, show_statistics
 	beq a0, t6, end_program
+	
+print_list:
+    	# Salva o head da lista em t0
+    	mv t5, sp
+    	# Avança para o próximo elemento
+  	lw t3, 0(t5)
+  	lw t4, 4(t5)
+	lw t3, (t3)
+	
+loop_print:
 
+    	# Imprime o valor do elemento atual
+    	add a0, t3, zero  # Carrega o valor do elemento atual em a0
+    	li a7, 1     # Imprime o valor como inteiro
+    	ecall
+    	
+    	la a0, espaco
+	li a7, 4
+	ecall
+	
+  	# Verifica se o elemento atual é nulo
+    	beqz t3, end_print
+    	beqz t4, end_print
+    	
+    	# Avança para o próximo elemento
+    	mv t5, t4
+    	# Avança para o próximo elemento
+  	lw t3, 0(t5)
+  	lw t4, 4(t5)
+  
+    	j loop_print
+
+end_print:
+    	la a0, printAqui  # Mensagem de finalização da lista
+    	li a7, 4
+    	ecall
+
+    	j main
+ 
 selecione_opcao_valida:
 	la a0, mensagemSelecioneOpcao
 	li a7, 4
@@ -49,7 +88,6 @@ insert_element_into_list:
 	# copiando o valor do inserido no input
 	mv t2, a0
 
-
   	# pegando o head e armazendo em a3
 	add a3, sp, zero
 	add t1, a4, zero
@@ -67,9 +105,8 @@ insert_element_into_list:
 insere_inteiro:
 
 	# beq t1, zero, insert_into_end_of_list
-	beq t1, zero, insert_first_element
+	beqz t1, insert_first_element
 
-	
 	mv t5, sp 
 	
 	j insert_after
@@ -106,33 +143,26 @@ insert_first_element:
 	#ecall
 
 	add a0, a4, zero
-	li a7, 1	
+	li a7, 1
 	ecall
 	# corrigir esse retorno
 	j main
 insert_after:
-	# imprime o valor atual
-	lw t3, 0(t5)
-	lw t4, 4(t5)
+	lw t3, 0(t5) # valor
+	lw t4, 4(t5) # next
 	lw t3, (t3)
 	
 loop_insercao:
-	
-	# valor atual e menor que o valor do input
-	ble t3, a0, go_to_next_value
-	
-	# beqz t4, insert_last
-		
-	# valor atual e maior que o valor do input
-	bge t3, a0, insert_greater
-	
-	beqz t4, insert_last
-	
-	add a0, t3, zero
-	li a7, 1
-	ecall
-	
-	j main
+  	# Verifica se o valor atual é maior que o valor a ser inserido
+  	bgt t3, a0, inserir_esquerda
+  	
+  	beqz t4, insert_last
+  	mv t5, t4
+  	# Avança para o próximo elemento
+  	lw t3, 0(t5)
+  	lw t4, 4(t5)
+
+  	j loop_insercao 
 	
 insert_last:
 	
@@ -140,9 +170,11 @@ insert_last:
 	li a7, 9
 	ecall
 	
-
+	
 	sw t2, 0(a0)
 	sw zero, 4(a0)
+	
+	addi t2, t5, 4
 	
 	sw a0, 4(t5)
 	
@@ -152,15 +184,8 @@ insert_last:
 	#li a7, 1
 	#ecall
 	j main
-
-go_to_next_value:
-	mv t5, t4
-	lw t3, 0(t5)
-	lw t4, 4(t5)
 	
-	j loop_insercao
-	
-insert_greater:
+inserir_esquerda:
 	beq t5, sp, insert_into_first_place
 
 insert_into_middle:
@@ -187,7 +212,6 @@ remove_element_by_index:
 
 remove_element_by_value:
 
-print_list:
 
 show_statistics:
 
