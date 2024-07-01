@@ -31,51 +31,12 @@ main:
 	beq a0, t4, print_list
 	beq a0, t5, show_statistics
 	beq a0, t6, end_program
-	
-print_list:
-    	# Salva o head da lista em t0
-    	mv t5, sp
-    	# Avança para o próximo elemento
-  	lw t3, 0(t5)
-  	lw t4, 4(t5)
-	lw t3, (t3)
-	
-loop_print:
-
-    	# Imprime o valor do elemento atual
-    	add a0, t3, zero  # Carrega o valor do elemento atual em a0
-    	li a7, 1     # Imprime o valor como inteiro
-    	ecall
-    	
-    	la a0, espaco
-	li a7, 4
-	ecall
-	
-  	# Verifica se o elemento atual é nulo
-    	beqz t3, end_print
-    	beqz t4, end_print
-    	
-    	# Avança para o próximo elemento
-    	mv t5, t4
-    	# Avança para o próximo elemento
-  	lw t3, 0(t5)
-  	lw t4, 4(t5)
-  
-    	j loop_print
-
-end_print:
-    	la a0, printAqui  # Mensagem de finalização da lista
-    	li a7, 4
-    	ecall
-
-    	j main
  
 selecione_opcao_valida:
 	la a0, mensagemSelecioneOpcao
 	li a7, 4
 	ecall
 	j main
-	
 
 insert_element_into_list:
 	la a0, mensagemInserirElemento
@@ -111,10 +72,10 @@ insere_inteiro:
 	
 	j insert_after
 	# carrega o proximo endereco
-	#addi a3,a3, 4
+	#addi a3, a3, 4
 
 	#bnez a6, insert_into_end_of_list
-	
+
 	ret
 
 insert_first_element:
@@ -178,11 +139,6 @@ insert_last:
 	
 	sw a0, 4(t5)
 	
-	# print para ver se o valor esta la correto
-	#lw t1, 4(sp)
-    	#mv a0, t1
-	#li a7, 1
-	#ecall
 	j main
 	
 inserir_esquerda:
@@ -201,17 +157,55 @@ insert_into_first_place:
 	li a7, 9
 	ecall
 	
+	lw t6, 0(sp)
 	sw t2, 0(a0)
-	sw sp, 4(a0)
+	sw t6, 4(a0)
 	
-	mv sp, a0
-	
+	# coloca o head novo na posição do antigo
+	sw a0, 0(sp)	
 	j main
 	
 remove_element_by_index:
 
 remove_element_by_value:
 
+print_list:
+    	mv t5, sp
+    	# Avança para o próximo elemento
+  	lw t3, 0(t5)
+  	lw t4, 4(t3)
+  	lw t3, (t3)
+	
+	
+loop_print:
+
+    	# Imprime o valor do elemento atual
+    	add a0, t3, zero
+    	li a7, 1
+    	ecall
+    	
+    	la a0, espaco
+	li a7, 4
+	ecall
+	
+  	# Verifica se o elemento atual é nulo
+    	beqz t3, end_print
+    	beqz t4, end_print
+    	
+    	# Avança para o próximo elemento
+    	mv t5, t4
+    	# Avança para o próximo elemento
+  	lw t3, 0(t5)
+  	lw t4, 4(t5)
+  
+    	j loop_print
+
+end_print:
+    	la a0, printAqui  # Mensagem de finalização da lista
+    	li a7, 4
+    	ecall
+
+    	j main
 
 show_statistics:
 
