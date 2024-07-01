@@ -68,7 +68,7 @@ insere_inteiro:
 	# beq t1, zero, insert_into_end_of_list
 	beqz t1, insert_first_element
 
-	mv t5, sp 
+	mv t5, sp
 	
 	j insert_after
 	# carrega o proximo endereco
@@ -110,13 +110,13 @@ insert_first_element:
 	j main
 insert_after:
 	lw t3, 0(t5) # valor
-	lw t4, 4(t5) # next
+	lw t4, 4(t3) # next
 	lw t3, (t3)
 	
 loop_insercao:
   	# Verifica se o valor atual é maior que o valor a ser inserido
   	bgt t3, a0, inserir_esquerda
-  	
+ 
   	beqz t4, insert_last
   	mv t5, t4
   	# Avança para o próximo elemento
@@ -135,15 +135,20 @@ insert_last:
 	sw t2, 0(a0)
 	sw zero, 4(a0)
 	
-	addi t2, t5, 4
-	
+	bne t5, sp, get_address_from_head
+	# se o t5 for igual ao head, carrega primeiro o 
+	# endereço do que esta no head
+	lw t5, (t5)
+get_address_from_head:	
+	# insere o ponteiro no next do ultimo valor
 	sw a0, 4(t5)
 	
 	j main
 	
 inserir_esquerda:
 	beq t5, sp, insert_into_first_place
-
+	#j insert_last
+	
 insert_into_middle:
 	li a0, 8
 	li a7, 9
@@ -158,7 +163,9 @@ insert_into_first_place:
 	ecall
 	
 	lw t6, 0(sp)
+	
 	sw t2, 0(a0)
+	
 	sw t6, 4(a0)
 	
 	# coloca o head novo na posição do antigo
@@ -209,6 +216,12 @@ end_print:
 
 show_statistics:
 
+falha_alocacao:
+	la a0, mensagemErro
+	li a7, 4
+	ecall
+	j main
+	
 end_program:
 	la a0, mensagemFim
 	
